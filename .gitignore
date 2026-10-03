@@ -1,17 +1,51 @@
 ﻿@'
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# AgencyTrace research data
-Data/processed/
-Data/analysis/
+# Virtual environments
+.venv/
+venv/
+env/
 
-# Generated analysis outputs
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Generated research data
+data/processed/
+data/analysis/
+data/interim/
+
+# Generated outputs
 outputs/
 
-# Historical/reference implementation
+# Local historical/reference implementation
 legacy/
 
 # Notebook checkpoints
 .ipynb_checkpoints/
-'@ | Add-Content .gitignore
 
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Archives / backups
+*.zip
 *.old
+'@ | Set-Content .gitignore -Encoding UTF8

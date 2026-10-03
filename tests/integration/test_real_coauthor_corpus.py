@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agencytrace.episodes import reconstruct_suggestion_episodes
 from agencytrace.io import load_jsonl_events
+from agencytrace.reconstruct import reconstruct_suggestion_episodes
 
 
 RAW_DATA_DIR = Path("data/raw")
