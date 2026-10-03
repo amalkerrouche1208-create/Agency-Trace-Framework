@@ -1,0 +1,17 @@
+﻿@'
+
+# AgencyTrace research data
+Data/processed/
+Data/analysis/
+
+# Generated analysis outputs
+outputs/
+
+# Historical/reference implementation
+legacy/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+'@ | Add-Content .gitignore
+
+*.old
