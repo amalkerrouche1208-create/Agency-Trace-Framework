@@ -100,13 +100,13 @@ The audit commands are intended for scientific verification rather than ordinary
 
 ## `export`
 
-Regenerate both modern and historical processed metrics:
+Regenerate both AgencyTrace analytical metrics and historical reproduction metrics:
 
 ```bash
 agencytrace export
 ```
 
-Modern metrics only:
+AgencyTrace analytical metrics only:
 
 ```bash
 agencytrace export modern
@@ -207,7 +207,7 @@ agencytrace validate
 Validation checks:
 
 - raw session count;
-- modern session/selection metric row counts;
+- AgencyTrace session/selection metric row counts;
 - exact historical five-way reproduction;
 - target correlation matrix shape;
 - exact AI-share outcome composition;

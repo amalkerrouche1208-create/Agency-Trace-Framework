@@ -113,7 +113,7 @@ It is not a semantic-similarity score and does not indicate correctness or learn
 
 ## Authored-text AI share
 
-The modern corpus authored-text AI share excludes initial/system text:
+The AgencyTrace corpus authored-text AI share excludes initial/system text:
 
 ```text
 AI-origin final characters

@@ -41,7 +41,7 @@ target_behavior_metrics.csv
 request_outcomes.csv
 ```
 
-`session_metrics.csv` and `selection_metrics.csv` belong to the modern AgencyTrace layer.
+`session_metrics.csv` and `selection_metrics.csv` belong to the AgencyTrace analytical layer.
 
 `target_behavior_metrics.csv` and `request_outcomes.csv` belong to the historical reproduction layer and are intentionally kept separate.
 
@@ -82,7 +82,7 @@ AgencyTrace follows four data-handling rules:
 1. raw traces are never modified by the analysis pipeline;
 2. derived data are regenerated from code rather than manually edited;
 3. ambiguous events remain explicit anomalies instead of being force-assigned;
-4. modern metrics and historical reproduction metrics are stored separately.
+4. AgencyTrace analytical metrics and historical reproduction metrics are stored separately.
 
 ## Dataset attribution
 

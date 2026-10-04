@@ -2,14 +2,14 @@
 
 AgencyTrace currently contains two metric families:
 
-1. **modern AgencyTrace metrics**, derived from the validated lifecycle and causal-provenance model;
+1. **AgencyTrace analytical metrics**, derived from the validated lifecycle and causal-provenance model;
 2. **historical reproduction metrics**, preserved to reproduce the established reference analysis.
 
 They must not be mixed silently.
 
 ---
 
-## Modern metrics
+## AgencyTrace analytical metrics
 
 ### Selection-level retention
 
@@ -78,7 +78,7 @@ surviving AI characters / inserted AI characters
 
 ### Authored-text AI share
 
-Modern session/corpus AI share excludes initialization/system text:
+AgencyTrace session/corpus AI share excludes initialization/system text:
 
 ```text
 final AI-origin characters
@@ -92,7 +92,7 @@ Validated corpus value:
 0.2767
 ```
 
-The corresponding modern session-level tertiles are not the historical target tertiles and should not be used to reproduce the reference stacked-bar figure.
+The corresponding AgencyTrace session-level tertiles are not the historical target tertiles and should not be used to reproduce the reference stacked-bar figure.
 
 ---
 
@@ -175,7 +175,7 @@ historical AI inserted characters
 
 Historical AI characters use at most one qualifying AI insertion per request window.
 
-This is different from modern final authored-text AI share.
+This is different from AgencyTrace final authored-text AI share.
 
 ### AI Retention
 
@@ -272,7 +272,7 @@ Moderate   5,370
 High       9,943
 ```
 
-These are historical reproduction groups, not modern AgencyTrace AI-share groups.
+These are historical reproduction groups, not AgencyTrace AI-share groups.
 
 ---
 

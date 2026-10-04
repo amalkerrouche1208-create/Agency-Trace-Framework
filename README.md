@@ -23,7 +23,7 @@ flowchart LR
     A["Raw CoAuthor JSONL"] --> B["Event loading"]
     B --> C["Suggestion lifecycle reconstruction"]
     C --> D["Character-level provenance"]
-    D --> E["Modern AgencyTrace metrics"]
+    D --> E["AgencyTrace analytical metrics"]
     C --> F["Historical reproduction layer"]
     F --> G["Target analysis"]
     G --> H["Figures"]
@@ -32,7 +32,7 @@ flowchart LR
     H --> J
 ```
 
-This separation is intentional. The modern AgencyTrace methodology is not silently replaced by the simpler historical rules required to reproduce earlier reference analyses.
+This separation is intentional. The AgencyTrace analytical methodology is not silently replaced by the simpler historical rules required to reproduce earlier reference analyses.
 
 ---
 
@@ -78,9 +78,9 @@ No later `currentDoc` snapshot exists in the corpus, so final reconstructed docu
 
 ---
 
-## Modern AgencyTrace outcomes
+## AgencyTrace analytical outcomes
 
-The modern selection-level layer classifies confirmed AI insertions using causal provenance:
+The AgencyTrace analytical layer classifies confirmed AI insertions using causal provenance:
 
 - **Direct Adoption** — all inserted AI characters survive and remain contiguous without foreign-origin interruption.
 - **Modified Adoption** — some AI text survives, but the inserted span is partially deleted or interrupted.
@@ -95,7 +95,7 @@ Validated totals:
 | Non-Adoption | 225 | 1.76% |
 | **Total selections** | **12,812** | **100%** |
 
-The modern authored-text AI share excludes initialization/system text and is computed over final AI-origin plus final human-origin characters.
+The AgencyTrace authored-text AI share excludes initialization/system text and is computed over final AI-origin plus final human-origin characters.
 
 See [Metrics](docs/metrics.md) and [Provenance](docs/provenance.md).
 
@@ -222,7 +222,7 @@ data/raw/*.jsonl
         ├── lifecycle audit
         ├── provenance audit
         │
-        ├── modern metric export
+        ├── AgencyTrace metric export
         ├── metric audit
         │
         ├── historical target export
@@ -232,7 +232,7 @@ data/raw/*.jsonl
         └── release validation
 ```
 
-The final validator checks frozen corpus counts, modern metric exports, historical outcome reproduction, the target correlation matrix, AI-share group composition, and required figure outputs.
+The final validator checks frozen corpus counts, AgencyTrace metric exports, historical outcome reproduction, the target correlation matrix, AI-share group composition, and required figure outputs.
 
 See [Reproducibility](docs/reproducibility.md) and [Verification](docs/verification.md).
 
@@ -240,7 +240,7 @@ See [Reproducibility](docs/reproducibility.md) and [Verification](docs/verificat
 
 ## Generated outputs
 
-Modern processed metrics:
+AgencyTrace analytical metrics:
 
 ```text
 data/processed/session_metrics.csv
@@ -302,7 +302,6 @@ AgencyTrace/
 │   ├── figures.py
 │   └── cli.py
 ├── tests/
-├── CITATION.cff
 ├── pyproject.toml
 └── README.md
 ```
@@ -328,7 +327,7 @@ This principle will remain central in the upcoming ML layer: models will be trai
 - [Methodology](docs/methodology.md) — scientific assumptions and boundaries.
 - [Reconstruction](docs/reconstruction.md) — suggestion lifecycle semantics.
 - [Provenance](docs/provenance.md) — causal text-origin reconstruction.
-- [Metrics](docs/metrics.md) — modern and historical metrics.
+- [Metrics](docs/metrics.md) — AgencyTrace and historical metrics.
 - [CLI](docs/cli.md) — command reference.
 - [Reproducibility](docs/reproducibility.md) — end-to-end reproduction.
 - [Verification](docs/verification.md) — frozen validation results.
@@ -373,9 +372,3 @@ The interaction corpus originates from the Stanford CoAuthor project by Mina Lee
 AgencyTrace does not alter upstream dataset ownership or licensing. Before redistributing raw CoAuthor data, users should verify that their use and redistribution comply with the upstream dataset terms.
 
 ---
-
-## Citation
-
-Software citation metadata are provided in [`CITATION.cff`](CITATION.cff).
-
-If AgencyTrace contributes to published work, cite both the software artifact and the relevant CoAuthor dataset/publication according to the requirements of the upstream source.

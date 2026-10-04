@@ -55,15 +55,15 @@ User text insertions receive human origin; API insertions confirmed against reco
 
 ### `metrics.py`
 
-Computes modern AgencyTrace session- and selection-level measures from the validated reconstruction/provenance layer.
+Computes AgencyTrace session- and selection-level measures from the validated reconstruction/provenance layer.
 
-This module contains the modern adoption semantics and should not be confused with the historical reproduction layer.
+This module contains the AgencyTrace adoption semantics and should not be confused with the historical reproduction layer.
 
 ### `behavior.py`
 
 Implements the five-way request-outcome classifier used to reproduce the historical response-composition analysis.
 
-It is intentionally separate from the modern provenance-based adoption classification.
+It is intentionally separate from the AgencyTrace provenance-based adoption classification.
 
 ### `analysis.py`
 
@@ -111,13 +111,13 @@ Audits fail when core invariants are violated.
 
 AgencyTrace maintains two analytical paths after reconstruction.
 
-### Modern path
+### AgencyTrace analytical path
 
 ```text
 events
   → lifecycle reconstruction
   → causal character provenance
-  → modern selection/session metrics
+  → AgencyTrace selection/session metrics
 ```
 
 This path is the methodological base for future ML work.
@@ -132,7 +132,7 @@ events
   → reference figures
 ```
 
-This path exists to reproduce earlier analytical definitions exactly. It is not treated as the preferred modern methodology.
+This path exists to reproduce earlier analytical definitions exactly. It is not treated as the preferred AgencyTrace methodology.
 
 ## Execution model
 
@@ -145,5 +145,5 @@ The current public implementation favors transparent, inspectable logic over pre
 1. **Fail visibly.** Invalid or ambiguous evidence should not be silently coerced into a plausible value.
 2. **Preserve causal provenance.** AI-origin text is attributed through reconstructed insertion events, not text similarity.
 3. **Separate observation from interpretation.**
-4. **Keep reproduction compatibility isolated from modern methodology.**
+4. **Keep reproduction compatibility isolated from AgencyTrace methodology.**
 5. **Make every publication output regenerable from code.**

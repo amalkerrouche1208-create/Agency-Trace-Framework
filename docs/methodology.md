@@ -82,9 +82,9 @@ Text similarity is not used to infer AI authorship.
 
 Subsequent user edits can delete or interrupt AI-origin spans while the surviving characters retain their causal origin.
 
-## 6. Modern adoption semantics
+## 6. AgencyTrace adoption semantics
 
-Modern AgencyTrace classifies a confirmed AI insertion using its final provenance state.
+AgencyTrace classifies a confirmed AI insertion using its final provenance state.
 
 ### Direct Adoption
 
@@ -102,7 +102,7 @@ These categories describe observable text-use outcomes, not epistemic agreement.
 
 ## 7. Authored-text AI share
 
-Modern AI share is measured over final authored text:
+AgencyTrace AI share is measured over final authored text:
 
 ```text
 final AI-origin characters
@@ -128,7 +128,7 @@ Each historical window:
 4. uses the first `suggestion-select`;
 5. uses the first API `text-insert` after that selection in the same window.
 
-This compatibility model must not be interpreted as the modern AgencyTrace lifecycle model.
+This compatibility model must not be interpreted as the AgencyTrace lifecycle model.
 
 ## 9. Statistical analysis
 
@@ -158,7 +158,7 @@ Those constructs may become model targets only after explicit operationalization
 
 ## 11. ML implications
 
-Future machine-learning analyses will be built on the modern reconstruction/provenance layer.
+Future machine-learning analyses will be built on the validated AgencyTrace reconstruction/provenance layer.
 
 Before modeling, every feature will be documented with:
 

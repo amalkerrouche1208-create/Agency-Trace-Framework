@@ -116,7 +116,7 @@ external final-document comparison       N/A
 
 This limitation is retained explicitly.
 
-## Modern metric audit
+## AgencyTrace metric audit
 
 Validated selection outcomes:
 
@@ -135,7 +135,7 @@ partial AI survival              3,060
 zero AI survival                   225
 ```
 
-Modern corpus authored-text AI share:
+AgencyTrace corpus authored-text AI share:
 
 ```text
 0.2767

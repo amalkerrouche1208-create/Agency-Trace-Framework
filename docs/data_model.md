@@ -79,7 +79,7 @@ Each confirmed selection can be summarized by measures such as:
 - surviving AI characters;
 - deleted AI characters;
 - retention ratio;
-- modern adoption class.
+- AgencyTrace adoption class.
 
 These are derived from provenance, not from the raw selection event alone.
 
@@ -87,7 +87,7 @@ These are derived from provenance, not from the raw selection event alone.
 
 Session-level outputs aggregate reconstruction/provenance evidence across a session.
 
-Modern session metrics and historical reproduction indicators are deliberately written to different files.
+AgencyTrace session metrics and historical reproduction indicators are deliberately written to different files.
 
 ## Historical request outcome
 
@@ -101,7 +101,7 @@ presented_no_selection
 request_without_suggestion
 ```
 
-These labels reproduce a previous analytical convention and must not be conflated with the modern three-way selection classification.
+These labels reproduce a previous analytical convention and must not be conflated with the AgencyTrace three-way selection classification.
 
 ## Historical session indicators
 

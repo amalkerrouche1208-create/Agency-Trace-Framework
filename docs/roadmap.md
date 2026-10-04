@@ -15,7 +15,7 @@ Includes:
 - selection/API insertion pairing;
 - reopen accounting;
 - character-level causal provenance;
-- modern adoption metrics;
+- AgencyTrace adoption metrics;
 - corpus audits.
 
 ## Stage 2 — Historical reproducibility
@@ -35,7 +35,7 @@ Includes:
 
 Status: **next**
 
-The ML dataset will be built from the modern reconstruction/provenance layer.
+The ML dataset will be built from the validated AgencyTrace reconstruction/provenance layer.
 
 Candidate feature families will include:
 

@@ -57,8 +57,8 @@ The full order is:
 1. text-delta audit
 2. lifecycle audit
 3. provenance audit
-4. modern metric export
-5. modern metric audit
+4. AgencyTrace metric export
+5. AgencyTrace metric audit
 6. historical target reproduction
 7. target analysis
 8. figure generation
@@ -77,7 +77,7 @@ agencytrace reproduce --skip-audits
 
 This still regenerates:
 
-- modern metrics;
+- AgencyTrace analytical metrics;
 - historical target metrics;
 - statistical analysis;
 - figures;
@@ -85,7 +85,7 @@ This still regenerates:
 
 ## Generated data
 
-Modern outputs:
+AgencyTrace analytical outputs:
 
 ```text
 data/processed/session_metrics.csv
@@ -139,8 +139,8 @@ The release validator checks at least the following:
 
 ```text
 raw sessions                    1,447
-modern session rows             1,447
-modern selection rows          12,812
+AgencyTrace session rows        1,447
+AgencyTrace selection rows     12,812
 historical request rows        18,103
 historical five-way counts      exact
 correlation matrix              10 x 10
@@ -174,7 +174,7 @@ Both are required before a release.
 
 AgencyTrace currently supports two distinct claims:
 
-1. the modern reconstruction/provenance pipeline satisfies its documented corpus invariants;
+1. the validated AgencyTrace reconstruction/provenance pipeline satisfies its documented corpus invariants;
 2. the historical compatibility layer reproduces the recovered target numerical results.
 
 The repository does **not** claim that every visual styling detail of the historical stacked-bar figure is source-identical.
