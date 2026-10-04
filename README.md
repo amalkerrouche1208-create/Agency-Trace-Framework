@@ -1,25 +1,33 @@
 # AgencyTrace
 
-**Trace reconstruction, provenance, behavioral measurement, and reproducible analysis of human–AI co-writing interactions.**
+**A Learning Analytics framework for making learner–AI agency, reliance, and regulation observable in AI-supported writing.**
 
-AgencyTrace accompanies the manuscript **“Who Acts, Who Decides, Who Regulates? Making Human–AI Agency Observable through Learning Analytics.”** It transforms temporally ordered CoAuthor interaction logs into auditable evidence about AI consultation, response use, text provenance, and reliance dynamics.
+AgencyTrace accompanies the manuscript **“Who Acts, Who Decides, Who Regulates? Making Human–AI Agency Observable through Learning Analytics.”** It transforms temporally ordered CoAuthor interaction traces into auditable evidence of how learners seek AI support, respond to AI-generated content, retain or revise AI contributions, and shift patterns of reliance across writing activity.
 
-The repository follows one central principle:
+The framework is grounded in one methodological principle:
 
-> **Do not infer more than the trace supports.**
+> **Interpret only what the observable learning trace can support.**
 
-Observable interaction events are reconstructed first, behavioral and provenance measures are derived second, and theoretical interpretation is introduced only where supported by the evidence.
+AgencyTrace therefore distinguishes observable interaction evidence from higher-level educational interpretation. Interaction events are first reconstructed into meaningful learner–AI episodes; these episodes are then used to derive measures of help seeking, response use, authorship provenance, reliance, and temporal change. Constructs such as agency, regulation, and responsibility are interpreted only where the trace provides sufficient evidence.
 
 > **Release:** `v0.1.1`  
 > **Python:** `>=3.11`  
-> **Validated corpus:** 1,447 CoAuthor sessions  
+> **Validated corpus:** 1,447 learner–AI co-writing sessions  
 > **Test suite:** 68 tests
 
 ---
 
 ## Overview
 
-Raw interaction logs do not directly reveal adoption, modification, rejection, reliance, or learner agency. AgencyTrace therefore separates reconstruction, measurement, historical reproduction, and analytical modeling into explicit layers.
+Interaction logs alone do not directly reveal learner agency, reliance, regulation, or responsibility. AgencyTrace provides an explicit analytical pathway from **observable learner–AI interaction traces** to **behavioral evidence**, while preserving the boundary between what is recorded, what is operationalized, and what can reasonably be interpreted.
+
+The framework separates four complementary layers:
+
+1. **Interaction reconstruction** — recovering learner–AI consultation and response-use episodes from raw event streams.
+2. **Behavioral measurement** — operationalizing help seeking, AI response use, revision, retention, and authored-text composition.
+3. **Temporal analysis** — examining how learner–AI reliance and response-use patterns evolve across a learning session.
+4. **Educational interpretation** — relating observable behavioral evidence to learner agency, regulation, and human–AI responsibility without treating these constructs as directly observed.
+
 
 ```mermaid
 flowchart LR
