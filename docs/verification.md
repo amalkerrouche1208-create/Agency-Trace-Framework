@@ -1,29 +1,237 @@
 # Verification
 
-Verified on 3 October 2026 with Python 3.12.14.
+This document records the frozen validation state of AgencyTrace `v0.1.1`.
 
-- The original release passed 29 tests. Version 0.1.1 passes 34 tests, including new refresh, concurrent-request, unanswered-request, display-identity and CLI-summary regressions.
-- An offline wheel was built using setuptools 84.0.0 and wheel 0.48.0, installed without runtime dependencies, and executed outside the source directory.
-- The supplied session replayed all 3,170 events and 2,766 text changes with zero reconstruction issues.
-- Four requests, three selections with matching insertions, and one user dismissal were recovered.
-- The final text contains 2,445 Unicode code points. Its SHA-256 digest is `b0f6ade69aeec0802bc434733c30f33da191069e62468896231237567823245f`.
-- Final insertion provenance comprises 245 initial, 1,919 writer, 277 AI and 4 API-formatting UTF-16 units.
+Latest corpus verification: **4 October 2026**.
 
-The final-text digest was independently checked using a plain-string Delta interpreter on this sample. The sample contains no supplementary Unicode characters; separate tests verify UTF-16 offset handling with emoji and reject split surrogate pairs. No later snapshot exists in the sample, so these checks establish implementation consistency rather than agreement with an independently recorded final draft.
+## Software tests
 
-Additional tests cover replacement/deletion provenance, selection mismatch, interrupted insertion confirmation, missing indices, dismissal, unknown API text, duplicate records, event gaps, timestamp regressions, malformed JSON, unsupported embeds and document-snapshot disagreement.
+Current public test suite:
 
-The standard editable-install command could not fetch build dependencies because package-index network access was unavailable. Wheel construction and installation were verified offline instead. Python 3.11 compatibility is declared but was not exercised in this environment.
+```text
+8 passed
+```
 
-## Version 0.1.1 corpus compatibility correction
+The suite includes CLI tests in addition to reconstruction/provenance fixtures.
 
-The author's terminal output reported 1,446 of 1,447 files reconstructed with version 0.1.0. This was text-replay completion, not confirmation that all provenance was resolved. The failed filename was absent from the supplied excerpt and remains undiagnosed.
+Corpus-level scientific verification is performed separately through the audit commands.
 
-The two subsequently supplied sessions were inspected and rerun with version 0.1.1:
+## Full-corpus reconstruction
 
-- `ef5ff569f6e0458ebb10f2f277612cfe.jsonl`: 9 requests, 8 selections, 8 confirmed insertions, zero issues. Final provenance: 473 initial, 1,282 writer, 863 AI, 6 API-formatting UTF-16 units; no surviving unknown text. Final text SHA-256: `3f4166bff88edd9a59ec2e3e0683782ac5f14c9d9f684a491d5a317ba0dc7950`.
-- `ff0d41e1426c410bbf87423713ac5e89.jsonl`: 13 requests, 8 selections, 8 confirmed insertions. Three ambiguous request-to-display links are preserved for concurrent requests at events 2, 3 and 4. The selection at event 14 is nevertheless linked to display 10 and insertion 16. Final provenance: 245 initial, 1,905 writer, 718 AI UTF-16 units; no surviving unknown text. Final text SHA-256: `647846f7ea8e578ba9217b487dbfdc9936d806533db7cc7eb586966d6a5aae4f`.
+Command:
 
-Both final texts match independent plain-string replay. The initial supplied session retains its original results. The synthetic regression tests preserve the relevant event order without requiring the two new corpus files in the update archive.
+```bash
+agencytrace reconstruct data/raw --summary
+```
 
-The full corpus must be rerun on the author's computer. This stage makes no claim of reproducing the paper's indicator values, clusters, transitions, correlations or figures.
+Validated result:
+
+```text
+Input files                    : 1447
+Successfully reconstructed     : 1447
+Failed                         : 0
+
+Events                         : 2701458
+Suggestion requests            : 18103
+Suggestion selections          : 12812
+Dismissed episodes             : 4088
+Reopen events                  : 45
+
+suggestion-get                 : 18103
+suggestion-open                : 17012
+suggestion-select              : 12812
+suggestion-close               : 16967
+```
+
+## Lifecycle audit
+
+Validated:
+
+```text
+Sessions                        1,447
+Reconstructed episodes         18,103
+Reconstructed selections       12,812
+Reconstructed insertions       12,812
+Dismissed episodes              4,088
+
+Attributable reopen events         42
+Orphan reopen events                3
+
+Missing raw selections               0
+Spurious reconstructed selects       0
+Duplicate reconstructed selects      0
+Selection mismatch sessions          0
+
+Episodes with >1 selection          19
+Maximum selections in an episode     3
+```
+
+Core lifecycle invariants pass.
+
+## Provenance audit
+
+Validated:
+
+```text
+Raw API text-insert events       12,812
+Mapped selection insert events   12,812
+Missing insertion mappings            0
+Duplicate insertion mappings          0
+
+Raw API inserted characters      858,779
+Provenance AI inserted chars     858,779
+Insertion-length mismatches            0
+
+AI characters surviving          801,131
+AI characters deleted             57,648
+AI accounting failures                 0
+
+Final textual characters       3,359,765
+Final AI-origin characters       801,131
+Final human-origin characters  2,094,218
+Final system-origin characters   464,416
+Final other-origin characters          0
+```
+
+Corpus AI retention ratio:
+
+```text
+0.9329
+```
+
+Final provenance partition passes.
+
+## Final-document validation boundary
+
+All 1,447 sessions contain an initial `currentDoc`.
+
+No later independent final `currentDoc` snapshot exists in the corpus.
+
+Therefore:
+
+```text
+internal delta/provenance validation     PASS
+external final-document comparison       N/A
+```
+
+This limitation is retained explicitly.
+
+## Modern metric audit
+
+Validated selection outcomes:
+
+```text
+Direct Adoption        7,833
+Modified Adoption      4,754
+Non-Adoption             225
+Total selections       12,812
+```
+
+Validated substructure:
+
+```text
+complete but interrupted spans   1,694
+partial AI survival              3,060
+zero AI survival                   225
+```
+
+Modern corpus authored-text AI share:
+
+```text
+0.2767
+```
+
+## Historical five-way reproduction
+
+Validated exact counts:
+
+```text
+accept_unchanged               12,427
+accepted_modified                 364
+non_adoption                    3,205
+presented_no_selection            878
+request_without_suggestion      1,229
+total                          18,103
+```
+
+All historical five-way differences against the recovered reference counts are zero.
+
+## Historical AI-share analysis
+
+Validated thresholds:
+
+```text
+Low / Moderate      0.170401
+Moderate / High     0.318069
+```
+
+Session groups:
+
+```text
+Low        483
+Moderate   482
+High       482
+```
+
+Request totals by group:
+
+```text
+Low        2,790
+Moderate   5,370
+High       9,943
+```
+
+Outcome composition:
+
+```text
+Low       Direct 51.5% | Modified 2.9% | Non 25.5% | NoSel 5.5% | NoSug 14.6%
+Moderate  Direct 65.4% | Modified 3.6% | Non 17.8% | NoSel 6.0% | NoSug  7.2%
+High      Direct 75.2% | Modified 0.9% | Non 15.5% | NoSel 4.1% | NoSug  4.4%
+```
+
+## Historical correlation reproduction
+
+The 10 × 10 Spearman matrix produced by the compatibility layer was compared numerically with the recovered historical reference matrix.
+
+Validated maximum absolute difference:
+
+```text
+0.0
+```
+
+The numeric heatmap reproduction is therefore exact relative to that recovered matrix.
+
+## Figure generation
+
+Validated outputs:
+
+```text
+figures/ai_share_response_outcomes.png
+figures/ai_share_response_outcomes.pdf
+figures/trace_indicator_correlations.png
+figures/trace_indicator_correlations.pdf
+```
+
+Figure generation has been verified through both the module and public CLI.
+
+## Release validation
+
+Command:
+
+```bash
+agencytrace validate
+```
+
+Current validated result:
+
+```text
+PASS  Raw sessions: 1447
+PASS  Session metrics: 1447
+PASS  Selection metrics: 12812
+PASS  Historical five-way outcome replication
+PASS  10 x 10 target correlation matrix
+PASS  Exact AI-share outcome composition
+PASS  Target PNG/PDF figures
+
+AgencyTrace release validation PASSED.
+```

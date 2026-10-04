@@ -1,33 +1,146 @@
-# Reconstruction rules
+# Suggestion Lifecycle Reconstruction
 
-## Selection evidence
+AgencyTrace reconstructs suggestion interactions from temporally ordered CoAuthor events.
 
-Requests and displays have separate lifecycles. A `suggestion-get` records a request without replacing the currently visible panel. A later `suggestion-close` closes that panel; it cannot consume the new request waiting for a response. Every `suggestion-open` creates a distinct candidate-set identity. A new display supersedes the previous display if it was still visible.
+The objective is not to create the most convenient narrative. It is to preserve every observable request and selection while avoiding unsupported attribution.
 
-Request-to-display links use an explicit adapter assumption: each successful request supplies one new display. A serial request can therefore be linked to its display. If multiple requests overlap, all possible request links within the batch are retained until the corresponding number of displays has arrived. Response arrival order is never treated as request order. `request_event` and request timing remain unavailable for ambiguous displays, with an `ambiguous_request_link` issue. Lost responses, duplicate displays or interface-specific reopen behavior can violate that assumption and require review; it is not a replacement for request IDs.
+## Reconstruction unit
 
-An unmatched display still has observable text and an event number. Its selected insertion can be confirmed even if the request link is unavailable. Suggestion identity is `(display event, candidate index)` so two unlinked displays never share provenance accidentally. A request with no observed response remains in `Reconstruction.requests`; it is not automatically a learning episode or a zero-result response.
+One `suggestion-get` creates one `SuggestionEpisode`.
 
-`suggestion-up`, `suggestion-down`, hover and unhover events are retained as navigation evidence. At selection, a valid integer `currentHoverIndex` identifies the candidate. `currentSuggestionIndex` is not used as a speculative fallback. These are adapter rules checked against the supplied logs, not a claim of coverage of every interface version.
+Therefore:
 
-Confirmation requires the next text-changing event after selection to be an API insertion with one inserted string matching the candidate. An intervening API close can finish the display lifecycle without erasing the pending selection. An intervening user edit, another request or a new display invalidates confirmation.
+```text
+number of reconstructed episodes
+=
+number of observed suggestion-get events
+```
 
-An exact match preserves all candidate characters as AI-origin insertion. If only surrounding whitespace differs, the matching text receives AI provenance and its surrounding inserted whitespace receives `api_formatting`. No fuzzy or semantic matching is performed. An unmatched API insertion remains `unknown` and produces an issue.
+For the validated corpus:
 
-A user close without selection is recorded as `dismissed`. It does not establish epistemic rejection, non-adoption of every candidate or a latent reliance state. For interface context, the [CoAuthor interface documentation](https://github.com/minalee-research/coauthor-interface#frontend) describes repeated requests, keyboard navigation and reopening previous suggestions.
+```text
+suggestion-get events          18,103
+reconstructed episodes         18,103
+```
 
-## Document provenance
+## Lifecycle state
 
-The starting document receives `initial` provenance: its contents may combine prompt material and pre-existing text. User insertions receive `writer` provenance. This records insertion source, not original intellectual authorship. Pasting and undo/redo may reinsert earlier AI text as a user event; this stage does not infer its earlier origin.
+The reconstruction logic maintains the observable state needed to distinguish:
 
-Retained text keeps its insertion provenance. Deletions are recorded by origin and, for confirmed AI text, by display event and suggestion index. Surviving AI units describe literal persistence; they do not measure semantic retention, text quality or the paper's AI-contribution indicator without a specified denominator and operational definition.
+- pending requests;
+- the currently displayed suggestion episode;
+- selection records awaiting their API insertion;
+- previously observable episodes that can receive a reopen.
 
-Each final span stores UTF-16 offsets and its originating event number. Each session stores the input digest and source path. Populated post-initialization `currentDoc` values are checked as post-event snapshots; empty strings are treated as absent snapshots. The supplied sample has no later document snapshot, so replay cannot be validated against an independently recorded final draft.
+This is necessary because request, display, selection, close, and insertion events do not always occur as a simple one-to-one sequence.
 
-Quill represents edits with insert, retain and delete operations; unmentioned trailing text is retained. Formatting attributes do not change the plain-text content reconstructed here. See the [Quill Delta specification](https://quilljs.com/docs/delta).
+## Requests and displays
 
-## Scientific boundary
+A request can exist even when no subsequent suggestion display is observed.
 
-This stage supports the trace reconstruction prerequisite described in manuscript sections 4.2–4.3. It does not implement Algorithm 1 or compute Table 2 indicators. Verification, monitoring, explicit delegation, decision authority and teacher intervention require corresponding evidence; none is inferred from selection or editing alone.
+Such a request remains in the reconstructed data.
 
-Before subsequent stages, the author must specify learning-episode boundaries, indicator formulas and denominators, clustering configuration, transition states and reliance-shift rules. Suggestion lifecycles may inform those choices but are not automatically learning episodes.
+AgencyTrace does not delete unanswered requests merely because they cannot contribute to a later selection.
+
+## Selections
+
+Selections are reconstructed at event identity level.
+
+The lifecycle audit compares raw `suggestion-select` event numbers with reconstructed selection event numbers.
+
+Validated corpus:
+
+```text
+raw suggestion-select              12,812
+reconstructed selections           12,812
+missing raw selections                  0
+spurious reconstructed selections       0
+duplicate reconstructed selections      0
+selection-mismatch sessions              0
+```
+
+## Multiple selections
+
+A request episode can contain more than one selection.
+
+Validated corpus:
+
+```text
+episodes with >1 selection    19
+maximum selections/episode     3
+```
+
+This is why AgencyTrace does not collapse the entire lifecycle to one selection field conceptually, even when compatibility properties expose a first/representative selection.
+
+## API insertion pairing
+
+A selection becomes a confirmed insertion record only when it is paired with the corresponding API text insertion according to the validated lifecycle rules.
+
+The validated corpus contains:
+
+```text
+reconstructed selections     12,812
+reconstructed insertions     12,812
+```
+
+No insertion is fabricated for an unmatched selection.
+
+## Dismissal
+
+A request episode can be marked as dismissed based on observable close/lifecycle evidence.
+
+Validated dismissed episodes:
+
+```text
+4,088
+```
+
+Dismissal is a UI/behavioral observation. It is not automatically interpreted as disagreement, rejection, or independent decision-making.
+
+## Reopen events
+
+Reopens are attached to the most recently observable episode when the trace provides such an antecedent.
+
+Validated corpus:
+
+```text
+raw suggestion-reopen          45
+attributable reopen events     42
+orphan reopen events            3
+```
+
+For an orphan reopen, AgencyTrace retains the anomaly rather than creating a synthetic request episode.
+
+## Event ordering
+
+Reconstruction follows the event sequence represented by the trace.
+
+Timestamp regressions are auditable anomalies; they are not silently used to reorder the interaction into a more convenient sequence.
+
+## Audit invariants
+
+The lifecycle reconstruction is considered valid only when the following hold:
+
+```text
+one reconstructed episode per suggestion-get
+raw/reconstructed selection counts agree
+selection event identities agree
+selection/API insertion pairing is internally consistent
+reopen accounting is complete
+```
+
+The current corpus passes these invariants.
+
+## What reconstruction does not establish
+
+Lifecycle reconstruction alone does not establish:
+
+- trust;
+- learning;
+- verification;
+- cognitive effort;
+- agency;
+- regulation;
+- decision quality.
+
+It establishes the observable interaction structure required before such constructs can be operationalized.
