@@ -3,6 +3,12 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
+from agencytrace.ml.temporal_inference import (
+    early_late_change,
+    permutation_transition_test,
+    session_weighted_phase_rows,
+    summarize_session_weighted_phases,
+)
 from agencytrace.ml.transitions import (
     STATES,
     STATE_LABELS,
@@ -20,21 +26,20 @@ from agencytrace.ml.transitions import (
 
 
 SELECTION_METRICS = Path(
-    "data/processed/"
-    "selection_metrics.csv"
+    "data/processed/selection_metrics.csv"
 )
 
 SESSION_METRICS = Path(
-    "data/processed/"
-    "session_metrics.csv"
+    "data/processed/session_metrics.csv"
 )
 
 OUTPUT_DIR = Path(
-    "data/analysis/ml/"
-    "transitions"
+    "data/analysis/ml/transitions"
 )
 
-BOOTSTRAP_REPEATS = 500
+TRANSITION_BOOTSTRAP_REPEATS = 500
+PERMUTATION_REPEATS = 1000
+PHASE_BOOTSTRAP_REPEATS = 1000
 RANDOM_STATE = 42
 
 
@@ -99,11 +104,15 @@ def main() -> None:
         exist_ok=True,
     )
 
-    matrix_output: list[
+    # =================================================================
+    # 1. Consecutive selection transitions
+    # =================================================================
+
+    transition_rows: list[
         dict[str, object]
     ] = []
 
-    bootstrap_output: list[
+    transition_bootstrap_rows: list[
         dict[str, object]
     ] = []
 
@@ -113,11 +122,9 @@ def main() -> None:
         "all",
         "cross_request",
     ):
-        counts = (
-            transition_count_matrix(
-                sequences,
-                scope=scope,
-            )
+        counts = transition_count_matrix(
+            sequences,
+            scope=scope,
         )
 
         probabilities = (
@@ -133,7 +140,7 @@ def main() -> None:
             probabilities,
         )
 
-        matrix_output.extend(
+        transition_rows.extend(
             matrix_rows(
                 counts,
                 probabilities,
@@ -141,12 +148,12 @@ def main() -> None:
             )
         )
 
-        bootstrap_output.extend(
+        transition_bootstrap_rows.extend(
             bootstrap_transition_probabilities(
                 sequences,
                 scope=scope,
                 repeats=(
-                    BOOTSTRAP_REPEATS
+                    TRANSITION_BOOTSTRAP_REPEATS
                 ),
                 random_state=(
                     RANDOM_STATE
@@ -154,17 +161,29 @@ def main() -> None:
             )
         )
 
-    session_rows = (
+    # =================================================================
+    # 2. Session-level transition metrics
+    # =================================================================
+
+    session_transition_rows = (
         build_session_transition_metrics(
             sequences
         )
     )
+
+    # =================================================================
+    # 3. Pooled positional profile
+    # =================================================================
 
     positional_rows = (
         positional_outcome_profile(
             sequences
         )
     )
+
+    # =================================================================
+    # 4. First-to-last endpoint matrix
+    # =================================================================
 
     (
         endpoint_counts,
@@ -185,53 +204,182 @@ def main() -> None:
             "eligible_sessions"
         ] = endpoint_eligible
 
+    # =================================================================
+    # 5. Within-session permutation null
+    # =================================================================
+
+    (
+        permutation_rows,
+        persistence_summary,
+    ) = permutation_transition_test(
+        sequences,
+        scope="cross_request",
+        repeats=(
+            PERMUTATION_REPEATS
+        ),
+        random_state=(
+            RANDOM_STATE
+        ),
+    )
+
+    persistence_rows = [
+        persistence_summary
+    ]
+
+    # =================================================================
+    # 6. Session-weighted temporal phases
+    # =================================================================
+
+    session_phase_rows = (
+        session_weighted_phase_rows(
+            sequences
+        )
+    )
+
+    phase_summary_rows = (
+        summarize_session_weighted_phases(
+            session_phase_rows,
+            bootstrap_repeats=(
+                PHASE_BOOTSTRAP_REPEATS
+            ),
+            random_state=(
+                RANDOM_STATE
+            ),
+        )
+    )
+
+    early_late_rows = (
+        early_late_change(
+            session_phase_rows,
+            bootstrap_repeats=(
+                PHASE_BOOTSTRAP_REPEATS
+            ),
+            random_state=(
+                RANDOM_STATE
+            ),
+        )
+    )
+
+    # =================================================================
+    # 7. Write outputs
+    # =================================================================
+
     paths = {
-        "matrix": (
+        "transition_matrix": (
             OUTPUT_DIR
             / "transition_matrix.csv"
         ),
-        "bootstrap": (
+        "transition_bootstrap": (
             OUTPUT_DIR
             / "transition_bootstrap.csv"
         ),
-        "session": (
+        "session_transition_metrics": (
             OUTPUT_DIR
             / "session_transition_metrics.csv"
         ),
-        "position": (
+        "positional_outcomes": (
             OUTPUT_DIR
             / "positional_outcomes.csv"
         ),
-        "endpoint": (
+        "endpoint_matrix": (
             OUTPUT_DIR
             / "endpoint_matrix.csv"
+        ),
+        "permutation_null": (
+            OUTPUT_DIR
+            / "transition_permutation_null.csv"
+        ),
+        "persistence_test": (
+            OUTPUT_DIR
+            / "transition_persistence_test.csv"
+        ),
+        "session_phase_shares": (
+            OUTPUT_DIR
+            / "session_phase_shares.csv"
+        ),
+        "phase_summary": (
+            OUTPUT_DIR
+            / "session_weighted_phase_summary.csv"
+        ),
+        "early_late_change": (
+            OUTPUT_DIR
+            / "early_late_change.csv"
         ),
     }
 
     write_rows(
-        paths["matrix"],
-        matrix_output,
+        paths[
+            "transition_matrix"
+        ],
+        transition_rows,
     )
 
     write_rows(
-        paths["bootstrap"],
-        bootstrap_output,
+        paths[
+            "transition_bootstrap"
+        ],
+        transition_bootstrap_rows,
     )
 
     write_rows(
-        paths["session"],
-        session_rows,
+        paths[
+            "session_transition_metrics"
+        ],
+        session_transition_rows,
     )
 
     write_rows(
-        paths["position"],
+        paths[
+            "positional_outcomes"
+        ],
         positional_rows,
     )
 
     write_rows(
-        paths["endpoint"],
+        paths[
+            "endpoint_matrix"
+        ],
         endpoint_rows,
     )
+
+    write_rows(
+        paths[
+            "permutation_null"
+        ],
+        permutation_rows,
+    )
+
+    write_rows(
+        paths[
+            "persistence_test"
+        ],
+        persistence_rows,
+    )
+
+    write_rows(
+        paths[
+            "session_phase_shares"
+        ],
+        session_phase_rows,
+    )
+
+    write_rows(
+        paths[
+            "phase_summary"
+        ],
+        phase_summary_rows,
+    )
+
+    write_rows(
+        paths[
+            "early_late_change"
+        ],
+        early_late_rows,
+    )
+
+    # =================================================================
+    # 8. Corpus summary
+    # =================================================================
 
     sessions_with_selection = sum(
         bool(sequence)
@@ -261,12 +409,25 @@ def main() -> None:
         "cross_request"
     ]
 
-    print()
-    print("=" * 88)
-    print(
-        "AgencyTrace — Selection Transition Analysis"
+    all_transition_count = int(
+        all_counts.sum()
     )
-    print("=" * 88)
+
+    cross_transition_count = int(
+        cross_counts.sum()
+    )
+
+    intra_transition_count = (
+        all_transition_count
+        - cross_transition_count
+    )
+
+    print()
+    print("=" * 92)
+    print(
+        "AgencyTrace — Temporal Response-Use Analysis"
+    )
+    print("=" * 92)
 
     print(
         f"Sessions                       : "
@@ -295,27 +456,28 @@ def main() -> None:
 
     print(
         f"All consecutive transitions    : "
-        f"{int(all_counts.sum())}"
+        f"{all_transition_count}"
     )
 
     print(
         f"Cross-request transitions      : "
-        f"{int(cross_counts.sum())}"
+        f"{cross_transition_count}"
     )
 
     print(
         f"Intra-request transitions      : "
-        f"{int(
-            all_counts.sum()
-            - cross_counts.sum()
-        )}"
+        f"{intra_transition_count}"
     )
+
+    # =================================================================
+    # 9. Transition probabilities
+    # =================================================================
 
     print()
     print(
         "CROSS-REQUEST TRANSITION PROBABILITIES"
     )
-    print("-" * 88)
+    print("-" * 92)
 
     for i, from_state in enumerate(
         STATES
@@ -337,18 +499,201 @@ def main() -> None:
                 ]
             )
 
-            if value != value:
-                text = "NA"
-            else:
-                text = (
-                    f"{float(value):.3f}"
-                )
+            text = (
+                "NA"
+                if value != value
+                else f"{float(value):.3f}"
+            )
 
             print(
                 f"  -> "
                 f"{STATE_LABELS[to_state]:<20} "
                 f"{text}"
             )
+
+    # =================================================================
+    # 10. Serial persistence inference
+    # =================================================================
+
+    observed_self = float(
+        persistence_summary[
+            "observed_self_transition_rate"
+        ]
+    )
+
+    null_self = float(
+        persistence_summary[
+            "null_mean_self_transition_rate"
+        ]
+    )
+
+    self_difference = float(
+        persistence_summary[
+            "difference_from_null"
+        ]
+    )
+
+    persistence_p = float(
+        persistence_summary[
+            "permutation_p"
+        ]
+    )
+
+    print()
+    print(
+        "SERIAL PERSISTENCE AGAINST "
+        "WITHIN-SESSION PERMUTATION NULL"
+    )
+    print("-" * 92)
+
+    print(
+        f"Observed self-transition rate : "
+        f"{observed_self:.4f}"
+    )
+
+    print(
+        f"Null mean                     : "
+        f"{null_self:.4f}"
+    )
+
+    print(
+        f"Difference                    : "
+        f"{self_difference:+.4f}"
+    )
+
+    print(
+        f"Permutation p                 : "
+        f"{persistence_p:.6f}"
+    )
+
+    # =================================================================
+    # 11. Null-adjusted transition cells
+    # =================================================================
+
+    print()
+    print(
+        "NULL-ADJUSTED CROSS-REQUEST TRANSITIONS"
+    )
+    print("-" * 92)
+
+    ordered_permutation_rows = sorted(
+        permutation_rows,
+        key=lambda row: (
+            -abs(
+                float(
+                    row[
+                        "difference_from_null"
+                    ]
+                    or 0.0
+                )
+            ),
+            str(
+                row[
+                    "from_state"
+                ]
+            ),
+            str(
+                row[
+                    "to_state"
+                ]
+            ),
+        ),
+    )
+
+    for row in ordered_permutation_rows:
+        from_state = str(
+            row[
+                "from_state"
+            ]
+        )
+
+        to_state = str(
+            row[
+                "to_state"
+            ]
+        )
+
+        observed = float(
+            row[
+                "observed_probability"
+            ]
+        )
+
+        null_mean = float(
+            row[
+                "null_mean_probability"
+            ]
+        )
+
+        difference = float(
+            row[
+                "difference_from_null"
+            ]
+        )
+
+        q_value = float(
+            row[
+                "fdr_q"
+            ]
+        )
+
+        print(
+            f"{STATE_LABELS[from_state]:<20} "
+            f"-> "
+            f"{STATE_LABELS[to_state]:<20} "
+            f"obs={observed:.3f}  "
+            f"null={null_mean:.3f}  "
+            f"diff={difference:+.3f}  "
+            f"q={q_value:.4f}"
+        )
+
+    # =================================================================
+    # 12. Session-weighted early-to-late change
+    # =================================================================
+
+    print()
+    print(
+        "SESSION-WEIGHTED EARLY -> LATE CHANGE"
+    )
+    print("-" * 92)
+
+    for row in early_late_rows:
+        outcome = str(
+            row[
+                "outcome"
+            ]
+        )
+
+        mean_change = float(
+            row[
+                "mean_late_minus_early"
+            ]
+        )
+
+        lower = float(
+            row[
+                "ci_2_5"
+            ]
+        )
+
+        upper = float(
+            row[
+                "ci_97_5"
+            ]
+        )
+
+        print(
+            f"{STATE_LABELS[outcome]:<20} "
+            f"mean change="
+            f"{mean_change:+.4f}  "
+            f"95% CI=["
+            f"{lower:+.4f}, "
+            f"{upper:+.4f}]"
+        )
+
+    # =================================================================
+    # 13. Output inventory
+    # =================================================================
 
     print()
     print(
@@ -360,7 +705,11 @@ def main() -> None:
             f"  {path}"
         )
 
-    print("=" * 88)
+    print("=" * 92)
+    print(
+        "Temporal response-use analysis completed."
+    )
+    print("=" * 92)
 
 
 if __name__ == "__main__":
