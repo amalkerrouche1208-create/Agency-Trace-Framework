@@ -18,6 +18,10 @@ dev = [
     "pytest",
 ]
 
+ml = [
+    "scikit-learn>=1.5",
+]
+
 [project.scripts]
 agencytrace = "agencytrace.cli:main"
 
