@@ -1,146 +1,318 @@
-# Suggestion Lifecycle Reconstruction
+# From Event Streams to Analytically Valid Suggestion Episodes
 
-AgencyTrace reconstructs suggestion interactions from temporally ordered CoAuthor events.
+Suggestion lifecycle reconstruction establishes the observational foundation on which all subsequent AgencyTrace measures depend.
 
-The objective is not to create the most convenient narrative. It is to preserve every observable request and selection while avoiding unsupported attribution.
+The objective is not to simplify the trace into a convenient story. It is to recover the strongest interaction structure justified by the observable event sequence while preserving ambiguity, multiplicity, and anomalous events where they occur.
 
-## Reconstruction unit
+---
 
-One `suggestion-get` creates one `SuggestionEpisode`.
+## How to read this document
+
+The reconstruction layer answers three questions:
+
+| Question | Analytical purpose |
+|---|---|
+| What constitutes an observable AI-support episode? | Defines the unit on which consultation behavior is measured |
+| How are selections connected to insertions? | Establishes the causal bridge required for provenance |
+| What happens when the trace is incomplete or irregular? | Prevents unsupported reconstruction from becoming hidden analytical assumptions |
+
+---
+
+## Unit hierarchy
+
+```mermaid
+flowchart TD
+    E["Raw Event"]
+    R["Suggestion Request"]
+    P["Suggestion Episode"]
+    S["Selection"]
+    I["Confirmed AI Insertion"]
+    SE["Session"]
+    C["Corpus"]
+
+    E --> R
+    R --> P
+    P --> S
+    S --> I
+    P --> SE
+    I --> SE
+    SE --> C
+```
+
+The units are not interchangeable.
+
+An event is an observation.  
+An episode is a reconstructed interaction lifecycle.  
+A selection is a response-use action within that lifecycle.  
+A session is an ordered collection of such interactions.
+
+---
+
+## Reconstruction principle
+
+One observable `suggestion-get` event instantiates one `SuggestionEpisode`.
 
 Therefore:
 
 ```text
-number of reconstructed episodes
+number of reconstructed suggestion episodes
 =
 number of observed suggestion-get events
 ```
 
-For the validated corpus:
+Validated corpus:
 
-```text
-suggestion-get events          18,103
-reconstructed episodes         18,103
+| Quantity | Count |
+|---|---:|
+| `suggestion-get` events | 18,103 |
+| Reconstructed suggestion episodes | 18,103 |
+
+This one-to-one invariant prevents the reconstruction process from either dropping requests or manufacturing unobserved ones.
+
+---
+
+## Lifecycle architecture
+
+Suggestion interaction is not assumed to follow a perfectly linear request → display → selection → insertion sequence.
+
+AgencyTrace therefore maintains distinct observable states.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Requested
+
+    Requested --> Displayed: suggestion-open
+    Requested --> Unanswered: no observable display
+
+    Displayed --> Selected: suggestion-select
+    Displayed --> Closed: suggestion-close
+    Displayed --> Reopened: suggestion-reopen
+
+    Reopened --> Selected: suggestion-select
+    Reopened --> Closed: suggestion-close
+
+    Selected --> AwaitingInsertion
+    AwaitingInsertion --> Inserted: mapped API text-insert
+
+    Inserted --> Closed: lifecycle closure
+
+    Unanswered --> [*]
+    Closed --> [*]
 ```
 
-## Lifecycle state
+The diagram expresses analytical states, not assumptions that every episode traverses every state.
 
-The reconstruction logic maintains the observable state needed to distinguish:
+---
 
-- pending requests;
-- the currently displayed suggestion episode;
-- selection records awaiting their API insertion;
-- previously observable episodes that can receive a reopen.
+## Requests without displays
 
-This is necessary because request, display, selection, close, and insertion events do not always occur as a simple one-to-one sequence.
+A suggestion request remains analytically observable even when no later display event can be attributed to it.
 
-## Requests and displays
+AgencyTrace retains these requests because absence of a subsequent observable response is itself part of the interaction record.
 
-A request can exist even when no subsequent suggestion display is observed.
+It does not silently delete requests simply because they cannot contribute to a later selection or insertion.
 
-Such a request remains in the reconstructed data.
+This preserves the distinction between:
 
-AgencyTrace does not delete unanswered requests merely because they cannot contribute to a later selection.
+- a request that occurred;
+- a suggestion that was displayed;
+- a suggestion that was selected;
+- text that was ultimately inserted.
 
-## Selections
+---
 
-Selections are reconstructed at event identity level.
+## Selection reconstruction
 
-The lifecycle audit compares raw `suggestion-select` event numbers with reconstructed selection event numbers.
+Selections are reconstructed at **event identity level**.
+
+The lifecycle audit compares the identities of observed `suggestion-select` events with the selections represented by the reconstructed episodes.
+
+Validated result:
+
+| Selection invariant | Count |
+|---|---:|
+| Raw `suggestion-select` events | 12,812 |
+| Reconstructed selections | 12,812 |
+| Missing raw selections | 0 |
+| Spurious reconstructed selections | 0 |
+| Duplicate reconstructed selections | 0 |
+| Sessions with selection mismatch | 0 |
+
+This goes beyond matching corpus totals: the corresponding observable selection events are preserved.
+
+---
+
+## Multiplicity within an episode
+
+Suggestion episodes are not forced into a one-request/one-selection model.
 
 Validated corpus:
 
-```text
-raw suggestion-select              12,812
-reconstructed selections           12,812
-missing raw selections                  0
-spurious reconstructed selections       0
-duplicate reconstructed selections      0
-selection-mismatch sessions              0
+| Multiplicity indicator | Value |
+|---|---:|
+| Episodes with more than one selection | 19 |
+| Maximum selections in one episode | 3 |
+
+This matters analytically because a ratio such as selections per request can legitimately exceed one.
+
+Collapsing an episode to a single selection would erase observable response-use behavior.
+
+---
+
+## Selection–insertion pairing
+
+A reconstructed selection becomes a confirmed AI insertion only when the trace supports its association with an API-generated text insertion.
+
+```mermaid
+flowchart LR
+    A["Suggestion episode"]
+    B["Observed selection"]
+    C["Pending insertion mapping"]
+    D["API text insertion"]
+    E["Confirmed AI insertion"]
+    F["Provenance reconstruction"]
+
+    A --> B --> C --> D --> E --> F
 ```
-
-## Multiple selections
-
-A request episode can contain more than one selection.
 
 Validated corpus:
 
-```text
-episodes with >1 selection    19
-maximum selections/episode     3
+| Quantity | Count |
+|---|---:|
+| Reconstructed selections | 12,812 |
+| Confirmed mapped insertions | 12,812 |
+| Missing mappings | 0 |
+| Duplicate mappings | 0 |
+
+No synthetic insertion is created to repair an unmatched lifecycle.
+
+---
+
+## Dismissal as observable interaction behavior
+
+AgencyTrace identifies 4,088 dismissed episodes from observable lifecycle evidence.
+
+Dismissal is treated as an interactional event, not as a psychological conclusion.
+
+A dismissed suggestion may reflect many possibilities, including:
+
+- irrelevance;
+- timing;
+- interface behavior;
+- task completion;
+- dissatisfaction;
+- strategic non-use.
+
+The trace itself does not uniquely distinguish among these explanations.
+
+---
+
+## Reopen semantics
+
+The corpus contains 45 `suggestion-reopen` events.
+
+AgencyTrace attributes a reopen only where the observable lifecycle provides an antecedent episode.
+
+| Reopen status | Count |
+|---|---:|
+| Attributable reopen events | 42 |
+| Orphan reopen events | 3 |
+
+The three orphan reopen events remain explicit anomalies.
+
+They are not repaired by fabricating synthetic request episodes.
+
+---
+
+## Preserving anomaly rather than manufacturing certainty
+
+```mermaid
+flowchart TD
+    A["Irregular event"]
+    B{"Observable antecedent exists?"}
+
+    A --> B
+    B -- "Yes" --> C["Attribute using validated lifecycle rule"]
+    B -- "No" --> D["Retain as explicit anomaly"]
+    D --> E["Exclude unsupported causal claim"]
 ```
 
-This is why AgencyTrace does not collapse the entire lifecycle to one selection field conceptually, even when compatibility properties expose a first/representative selection.
+This policy is central to AgencyTrace.
 
-## API insertion pairing
+An incomplete trace should reduce inferential certainty, not trigger undocumented reconstruction.
 
-A selection becomes a confirmed insertion record only when it is paired with the corresponding API text insertion according to the validated lifecycle rules.
-
-The validated corpus contains:
-
-```text
-reconstructed selections     12,812
-reconstructed insertions     12,812
-```
-
-No insertion is fabricated for an unmatched selection.
-
-## Dismissal
-
-A request episode can be marked as dismissed based on observable close/lifecycle evidence.
-
-Validated dismissed episodes:
-
-```text
-4,088
-```
-
-Dismissal is a UI/behavioral observation. It is not automatically interpreted as disagreement, rejection, or independent decision-making.
-
-## Reopen events
-
-Reopens are attached to the most recently observable episode when the trace provides such an antecedent.
-
-Validated corpus:
-
-```text
-raw suggestion-reopen          45
-attributable reopen events     42
-orphan reopen events            3
-```
-
-For an orphan reopen, AgencyTrace retains the anomaly rather than creating a synthetic request episode.
+---
 
 ## Event ordering
 
-Reconstruction follows the event sequence represented by the trace.
+Reconstruction follows the observable event sequence.
 
-Timestamp regressions are auditable anomalies; they are not silently used to reorder the interaction into a more convenient sequence.
+Timestamp regressions are retained as auditable anomalies rather than being silently used to reorder the session into a more convenient chronology.
 
-## Audit invariants
+The event sequence and event identity therefore remain the primary reconstruction anchors.
 
-The lifecycle reconstruction is considered valid only when the following hold:
+---
 
-```text
-one reconstructed episode per suggestion-get
-raw/reconstructed selection counts agree
-selection event identities agree
-selection/API insertion pairing is internally consistent
-reopen accounting is complete
+## Reconstruction invariants
+
+The lifecycle layer is accepted only when all of the following conditions hold.
+
+| Validity criterion | Meaning |
+|---|---|
+| Episode conservation | Every observable request yields exactly one reconstructed episode |
+| Selection conservation | Every observable selection is represented once and only once |
+| Identity preservation | Reconstructed selections correspond to the same raw selection events |
+| Insertion consistency | Confirmed selections and API insertions are paired without duplication or fabrication |
+| Reopen accounting | Every reopen is either attributed to an observable antecedent or retained as an orphan anomaly |
+
+The validated corpus satisfies all five criteria.
+
+---
+
+## Reconstruction as a validity gate
+
+```mermaid
+flowchart LR
+    A["Raw interaction traces"]
+    B["Lifecycle reconstruction"]
+    C{"Audit invariants pass?"}
+    D["Provenance analysis"]
+    E["Stop / inspect anomaly"]
+
+    A --> B --> C
+    C -- "Yes" --> D
+    C -- "No" --> E
 ```
 
-The current corpus passes these invariants.
+Downstream provenance and behavioral analysis are meaningful only after this gate has been satisfied.
+
+---
+
+## What reconstruction establishes
+
+The reconstruction layer establishes:
+
+- observable request structure;
+- display and reopen relations;
+- selection identity;
+- multi-selection episodes;
+- selection–insertion mappings;
+- temporal ordering sufficient for downstream analysis.
+
+---
 
 ## What reconstruction does not establish
 
-Lifecycle reconstruction alone does not establish:
+Lifecycle reconstruction does not directly establish:
 
-- trust;
-- learning;
-- verification;
-- cognitive effort;
-- agency;
-- regulation;
-- decision quality.
+| Construct | Why the trace is insufficient at this layer |
+|---|---|
+| Trust | Selection can occur without epistemic trust |
+| Learning | No learning gain follows directly from a UI event |
+| Verification | Editing or selection does not reveal the reasoning process |
+| Cognitive effort | Interaction frequency is not equivalent to mental effort |
+| Agency | Agency requires an explicit operational framework beyond event presence |
+| Regulation | Temporal order alone does not demonstrate self-regulatory control |
+| Decision quality | Observable action does not establish whether a decision was appropriate |
 
-It establishes the observable interaction structure required before such constructs can be operationalized.
+Reconstruction is therefore a **precondition for interpretation**, not interpretation itself.

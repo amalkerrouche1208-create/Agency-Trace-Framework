@@ -1,149 +1,365 @@
-# Architecture
+# Analytical Architecture of AgencyTrace
 
-AgencyTrace is organized as a small scientific pipeline rather than a collection of independent scripts.
+AgencyTrace is organized as an **evidence-to-inference architecture** for Learning Analytics research on human–AI co-writing. Its central design commitment is that every higher-level analytical claim remains traceable to observable interaction evidence and that each inferential step is explicitly bounded by what the trace can support.
 
-Its core design separates **trace reconstruction**, **causal text provenance**, **behavioral measurement**, **historical reproduction**, **statistical analysis**, and **visualization**.
+The architecture therefore does not begin with learner labels, reliance categories, or predictive targets. It begins with event records and progressively constructs analytically defensible representations of consultation, response use, textual provenance, temporal dynamics, and prospective behavioral signal.
 
-## System overview
+---
+
+## How to read this document
+
+AgencyTrace can be understood through five complementary views.
+
+| View | Research question |
+|---|---|
+| Evidence pipeline | How does raw interaction evidence become an analytical indicator? |
+| Unit-of-analysis hierarchy | At what level is each phenomenon observed or inferred? |
+| Dual analytical paths | How are AgencyTrace measures kept distinct from historical reproduction rules? |
+| Analytical inquiry layer | How are multivariate, temporal, and predictive questions posed over the same validated evidence base? |
+| Validation gates | Which conditions must hold before a downstream result is considered interpretable? |
+| Formal metamodel | How are actors, interactions, patterns, reliance states, indicators, signals, and regulation represented conceptually? |
+
+No single diagram is intended to stand for the entire system. The views are deliberately orthogonal.
+
+---
+
+## HumanAITraceModel as the formal conceptual layer
+
+The repository includes **HumanAITraceModel**, an EMF/Ecore metamodel that complements the empirical AgencyTrace pipeline. Whereas the Python pipeline reconstructs and measures observable interaction evidence, HumanAITraceModel makes the **conceptual structure of that evidence explicit**.
+
+The metamodel spans six connected conceptual regions:
+
+| Region | Representative metamodel elements |
+|---|---|
+| Actors and context | `Actor`, `HumanActor`, `AIAgent`, `Teacher`, `Learner`, `LearningScenario`, `LearningActivity` |
+| Interaction structure | `InteractionTask`, `InteractionSequence`, `Stimulus`, `ReceiveEvent`, `Action` |
+| Usage and state | `AIUsagePattern`, `Trigger`, `PatternOccurrence`, `RelianceState` |
+| Learning Analytics evidence | `EvidenceNarration`, `LearningIndicator`, `LearningSignal` |
+| Agency and regulation | `Agency`, `RegulatoryConfiguration`, `ControlAllocation`, `RegulationMode` |
+| Analysis and representation | `InteractionAnalysis`, `AnalysisMethod`, `VisualAnalytics`, `VisualizationGoal` |
+
+```mermaid
+flowchart LR
+    AC["Actors & learning context"]
+    IN["Interaction structure"]
+    PS["AI-use patterns & reliance states"]
+    EV["Indicators & learning signals"]
+    RG["Agency & regulatory configuration"]
+    AN["Interaction & visual analytics"]
+
+    AC --> IN --> PS --> EV --> RG
+    PS --> AN
+    EV --> AN
+```
+
+This is a **conceptual relation**, not a claim that every Ecore class maps one-to-one onto a Python runtime class or a CSV column. The implementation data model and the formal metamodel operate at different abstraction levels.
+
+HumanAITraceModel therefore serves three architectural purposes:
+
+1. **conceptual explicitness** — constructs used in the paper are represented as named model elements rather than remaining implicit in prose;
+2. **traceability across abstraction levels** — observable interactions can be discussed in relation to patterns, states, indicators, signals, and regulatory interpretations without collapsing those levels;
+3. **boundary preservation** — the metamodel provides vocabulary for interpretation, while empirical claims remain constrained by the reconstruction and measurement evidence.
+
+The model resources are maintained under `HumanAITraceModel/model/` as `.ecore`, `.genmodel`, and `.aird` artifacts.
+
+---
+
+## 1. Evidence-to-inference architecture
+
+```mermaid
+flowchart LR
+    A["Interaction traces<br/>observable learner–AI events"]
+    B["Lifecycle reconstruction<br/>requests, displays, selections"]
+    C["Causal text provenance<br/>human / AI / system origin"]
+    D["Behavioral measurement<br/>trace-derived indicators"]
+
+    E["Multivariate structure<br/>continuous behavioral variation"]
+    F["Sequential dynamics<br/>response-use transitions"]
+    G["Prospective modeling<br/>insertion-time predictive signal"]
+
+    H["Interpretive layer<br/>bounded reliance dynamics"]
+    I["Inference boundaries<br/>what traces cannot establish"]
+
+    A --> B --> C --> D
+    D --> E
+    D --> F
+    D --> G
+
+    E --> H
+    F --> H
+    G --> H
+
+    I -. constrains .-> D
+    I -. constrains .-> H
+```
+
+This architecture encodes an epistemic ordering: **observation precedes operationalization, and operationalization precedes interpretation**.
+
+---
+
+## 2. Evidence strata
+
+AgencyTrace distinguishes four evidence strata.
+
+| Stratum | Empirical object | What it contributes |
+|---|---|---|
+| Trace evidence | Timestamped/event-ordered interaction records | Observable learner–AI actions |
+| Reconstructed interaction evidence | Suggestion episodes, selections, insertion mappings | Temporal and causal interaction structure |
+| Provenance evidence | Surviving/deleted character origins | Observable human–AI textual contribution |
+| Analytical evidence | Session, selection, transition, and prediction outputs | Patterns that can be statistically interrogated |
+
+The strata are cumulative. A later layer never retroactively changes the empirical meaning of an earlier layer.
+
+---
+
+## 3. Unit-of-analysis hierarchy
 
 ```mermaid
 flowchart TD
-    RAW["data/raw/*.jsonl"] --> IO["io.py\nload events"]
-    IO --> REC["reconstruct.py\nsuggestion lifecycle"]
-    REC --> PROV["provenance.py\ncharacter-level origin"]
-    PROV --> MET["metrics.py\nmodern metrics"]
+    E["Event<br/>smallest observable trace unit"]
+    R["Suggestion request<br/>observable consultation act"]
+    P["Suggestion episode<br/>reconstructed lifecycle"]
+    S["Selection<br/>response-use action"]
+    I["Confirmed AI insertion<br/>causal text entry"]
+    U["Provenance units<br/>surviving/deleted text"]
+    SE["Session<br/>ordered interaction trajectory"]
+    C["Corpus<br/>cross-session analytical population"]
 
-    REC --> BEH["behavior.py\nhistorical five-way outcomes"]
-    PROV --> BEH
+    E --> R --> P
+    P --> S --> I --> U
 
-    BEH --> EXP["export_target_behavior.py\nhistorical session indicators"]
-    EXP --> ANA["analysis.py\nAI-share groups + Spearman"]
-    ANA --> FIG["figures.py\npublication figures"]
+    P --> SE
+    S --> SE
+    U --> SE
 
-    MET --> VAL["audits / validation"]
-    FIG --> VAL
-    EXP --> VAL
+    SE --> C
 ```
 
-## Core package modules
+The hierarchy matters because analytical claims change meaning when the unit changes. A selection-level outcome is not a session-level learner type, and a session-level transition tendency is not a population-wide causal mechanism.
 
-### `io.py`
+---
 
-Reads CoAuthor JSONL event traces into the internal event representation.
+## 4. Core analytical objects
 
-The loader is responsible for parsing source records and exposing event fields needed by later stages. Scientific interpretation does not occur here.
+The validated AgencyTrace implementation centers on a small set of objects whose meanings are methodological rather than merely programmatic.
 
-### `models.py`
+| Object | Empirical meaning | Primary downstream use |
+|---|---|---|
+| Event | Observable interaction record | Trace ordering and replay |
+| Suggestion episode | One request-centered support lifecycle | Consultation and dismissal analysis |
+| Selection | Observable choice of an AI suggestion | Response-use analysis |
+| Confirmed insertion | Selection causally mapped to AI text insertion | Provenance attribution |
+| Provenance unit | Textual unit with causal origin | Retention and contribution measures |
+| Session | Ordered set of interaction episodes | Behavioral profiling and temporal analysis |
+| Transition | Ordered relation between response-use states | Sequential dependence analysis |
+| Insertion-time feature vector | Information available no later than AI insertion | Leakage-controlled prediction |
 
-Defines the shared typed structures used across reconstruction, provenance, and metrics.
+---
 
-The model layer separates raw event observations from reconstructed suggestion episodes and derived measurements.
+## 5. Dual analytical paths
 
-### `reconstruct.py`
+AgencyTrace deliberately maintains two post-reconstruction analytical paths.
 
-Reconstructs suggestion lifecycles.
+```mermaid
+flowchart TD
+    A["Validated interaction reconstruction"]
 
-The central unit is one observable `suggestion-get` request. Selection and insertion events are linked to requests without fabricating missing requests or responses.
+    A --> B["AgencyTrace analytical path"]
+    A --> C["Historical reproduction path"]
 
-The validated corpus contains 18,103 reconstructed request episodes and 12,812 selections.
+    B --> B1["Causal provenance"]
+    B1 --> B2["Selection/session metrics"]
+    B2 --> B3["Behavioral feature space"]
+    B3 --> B4["Robustness, temporal, prediction analyses"]
 
-### `provenance.py`
+    C --> C1["Recovered historical rules"]
+    C1 --> C2["Historical request outcomes"]
+    C2 --> C3["Historical indicators"]
+    C3 --> C4["Reference analysis and figures"]
 
-Replays document changes and tracks causal text origin.
-
-User text insertions receive human origin; API insertions confirmed against reconstructed selections receive AI causal origin; initial document content receives initialization/system origin. Deletion updates the surviving-origin representation.
-
-### `metrics.py`
-
-Computes AgencyTrace session- and selection-level measures from the validated reconstruction/provenance layer.
-
-This module contains the AgencyTrace adoption semantics and should not be confused with the historical reproduction layer.
-
-### `behavior.py`
-
-Implements the five-way request-outcome classifier used to reproduce the historical response-composition analysis.
-
-It is intentionally separate from the AgencyTrace provenance-based adoption classification.
-
-### `analysis.py`
-
-Builds the validated historical target analysis:
-
-- AI-contribution tertiles;
-- request-outcome composition by tertile;
-- the 10 × 10 Spearman correlation matrix;
-- pairwise sample-size matrix.
-
-### `figures.py`
-
-Generates the validated publication-oriented figures from `data/analysis/`.
-
-It does not recompute metrics internally.
-
-### `cli.py`
-
-Provides the public `agencytrace` command and delegates work to the validated modules/scripts.
-
-The CLI is deliberately thin so command-line behavior does not duplicate scientific logic.
-
-## Script layer
-
-The `scripts/` directory contains reproducibility and validation entry points:
-
-```text
-audit_text_deltas.py
-audit_suggestion_episodes.py
-audit_provenance.py
-audit_metrics.py
-export_metrics.py
-export_target_behavior.py
-reproduce_all.py
-validate_release.py
+    D["No silent metric substitution"]
+    D -. constrains .-> B
+    D -. constrains .-> C
 ```
 
-Audits fail when core invariants are violated.
+The historical path exists to reproduce an earlier analytical convention exactly. It is not used as an implicit substitute for the provenance-based AgencyTrace methodology.
 
-`reproduce_all.py` orchestrates the complete pipeline.
+This separation is especially important for AI-share measures, response-use categories, windowed historical indicators, and missing-value behavior.
 
-`validate_release.py` checks frozen corpus and historical-reference invariants.
+---
 
-## Data-flow boundaries
+## 6. Analytical inquiry layer
 
-AgencyTrace maintains two analytical paths after reconstruction.
+Once the validated behavioral representation is established, AgencyTrace supports three distinct forms of inquiry.
 
-### AgencyTrace analytical path
+| Inquiry | Primary question | Evidentiary status |
+|---|---|---|
+| Multivariate structure | Does behavior form stable discrete partitions or continuous dimensions? | Exploratory/robustness-oriented |
+| Temporal dynamics | How does response use evolve within sessions, and which transitions depart from within-session composition? | Sequential descriptive/inferential |
+| Prospective prediction | Does information available by insertion time contain signal about later response use? | Predictive, non-causal |
 
-```text
-events
-  → lifecycle reconstruction
-  → causal character provenance
-  → AgencyTrace selection/session metrics
+These analyses are intentionally complementary. None is treated as a privileged route to an underlying psychological construct.
+
+---
+
+## 7. Multivariate structure as a robustness question
+
+```mermaid
+flowchart LR
+    A["Session-level behavioral features"]
+    B["Robust scaling"]
+    C["Candidate clustering"]
+    D["Feature-drop sensitivity"]
+    E["Scaling sensitivity"]
+    F["Algorithm agreement"]
+    G["PCA / subspace analysis"]
+    H["Interpretive decision"]
+
+    A --> B
+    B --> C
+    C --> D
+    C --> E
+    C --> F
+    B --> G
+
+    D --> H
+    E --> H
+    F --> H
+    G --> H
 ```
 
-This path is the methodological base for future ML work.
+AgencyTrace does not treat a visually coherent clustering solution as sufficient evidence for natural learner types. Candidate partitions are interrogated through feature, scaling, and algorithm sensitivity.
 
-### Historical reproduction path
+The validated result favors **continuous multidimensional behavioral variation** over a fixed discrete taxonomy.
 
-```text
-events
-  → request-window compatibility logic
-  → historical indicators/outcomes
-  → target analysis
-  → reference figures
+---
+
+## 8. Temporal-analysis architecture
+
+```mermaid
+flowchart TD
+    A["Ordered selection records"]
+    B["Response-use sequence<br/>Direct / Modified / Non-Adoption"]
+
+    B --> C["Cross-request transition matrix"]
+    B --> D["Within-session permutation null"]
+    B --> E["Session phase representation"]
+    B --> F["Early ↔ late comparison"]
+
+    C --> G["Observed local dependencies"]
+    D --> G
+    E --> H["Session-weighted temporal tendency"]
+    F --> H
+
+    G --> I["Bounded temporal interpretation"]
+    H --> I
 ```
 
-This path exists to reproduce earlier analytical definitions exactly. It is not treated as the preferred AgencyTrace methodology.
+The temporal layer differentiates **broad serial persistence** from **localized transition dependence**. This distinction prevents an elevated transition probability from being interpreted without considering each session's underlying response-use composition.
 
-## Execution model
+---
 
-Corpus processing is session-oriented. Each raw file can be parsed and reconstructed independently, which keeps the scientific unit of processing explicit and makes later parallelization possible.
+## 9. Prospective prediction and the temporal information boundary
 
-The current public implementation favors transparent, inspectable logic over premature optimization.
+Prediction is constrained by a strict availability rule.
 
-## Design principles
+```mermaid
+flowchart LR
+    subgraph SAFE["Observable by AI insertion"]
+        A["Suggestion properties"]
+        B["Selection ordinal"]
+        C["Request/open latency"]
+        D["Prior interaction history"]
+        E["Event position / event gap"]
+    end
 
-1. **Fail visibly.** Invalid or ambiguous evidence should not be silently coerced into a plausible value.
-2. **Preserve causal provenance.** AI-origin text is attributed through reconstructed insertion events, not text similarity.
-3. **Separate observation from interpretation.**
-4. **Keep reproduction compatibility isolated from AgencyTrace methodology.**
-5. **Make every publication output regenerable from code.**
+    subgraph FUTURE["Future-derived evidence"]
+        F["Later deletion"]
+        G["Final survival"]
+        H["Final AI share"]
+        I["Future session duration"]
+        J["Outcome labels from final provenance"]
+    end
+
+    SAFE --> M["Grouped predictive model"]
+    M --> O["Eventual response-use outcome"]
+
+    FUTURE -- "excluded" --> X["Leakage boundary"]
+    X -. blocks .-> M
+```
+
+This architecture makes the prediction question prospective rather than retrospective.
+
+The resulting models test whether observable interaction history contains **predictive information**. They do not explain why a learner adopts, modifies, or removes AI-generated text.
+
+---
+
+## 10. Validation gates
+
+```mermaid
+flowchart TD
+    A["Raw corpus"]
+    B{"Trace / delta audit"}
+    C{"Lifecycle audit"}
+    D{"Provenance audit"}
+    E{"Metric audit"}
+    F{"Analytical robustness / leakage checks"}
+    G["Release-valid analytical artifact"]
+
+    A --> B
+    B -- "pass" --> C
+    C -- "pass" --> D
+    D -- "pass" --> E
+    E -- "pass" --> F
+    F -- "pass" --> G
+
+    B -- "fail" --> Z["Stop and inspect"]
+    C -- "fail" --> Z
+    D -- "fail" --> Z
+    E -- "fail" --> Z
+    F -- "fail" --> Z
+```
+
+AgencyTrace is therefore **fail-closed at the level of evidence**. A downstream analytical result is not accepted merely because a model or script executes.
+
+---
+
+## 11. Mapping the research architecture to the package
+
+The implementation mirrors the analytical separation without making software modules the organizing principle of the methodology.
+
+| Analytical responsibility | Principal implementation |
+|---|---|
+| Event loading and trace access | `io.py`, `models.py` |
+| Suggestion lifecycle reconstruction | `reconstruct.py` |
+| Character-level causal provenance | `provenance.py` |
+| AgencyTrace session/selection measurement | `metrics.py` |
+| Historical compatibility definitions | `behavior.py`, `analysis.py` |
+| Historical reference figures | `figures.py` |
+| Behavioral feature construction | `ml/features.py`, `ml/dataset.py` |
+| Clustering and dimensionality inquiry | `ml/clustering.py`, `ml/dimensionality.py`, `ml/robustness.py` |
+| Temporal response-use analysis | `ml/transitions.py`, `ml/temporal_inference.py` |
+| Prospective prediction | `ml/prediction.py`, `ml/prediction_tasks.py`, `ml/prediction_inference.py` |
+| Research orchestration | `scripts/reproduce_all.py` |
+| Formal conceptual representation | `HumanAITraceModel/model/HumanAITraceModel.ecore`, `.genmodel`, `.aird` |
+| Release invariants | `scripts/validate_release.py` |
+
+This mapping is deliberately secondary to the evidence architecture: modules exist to operationalize the research design, not the reverse.
+
+---
+
+## 12. Architectural principles
+
+AgencyTrace is governed by seven methodological principles.
+
+| Principle | Consequence |
+|---|---|
+| Evidence conservation | Observable requests and selections are not silently dropped |
+| Causal provenance | AI-origin text is attributed through insertion events rather than similarity |
+| Explicit uncertainty | Orphan or ambiguous evidence remains visible rather than being repaired speculatively |
+| Analytical separation | Historical reproduction rules remain isolated from AgencyTrace measures |
+| Temporal discipline | Prospective models cannot access future-derived information |
+| Inferential restraint | Behavioral traces are not reified as direct measures of cognition or agency |
+| Formal trace semantics | HumanAITraceModel externalizes the conceptual vocabulary without replacing empirical operationalization |
+
+Together, these principles define AgencyTrace as a **research instrument for making human–AI interaction behavior inspectable**, not as a system for assigning latent learner identities.

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="humanAITraceModel" nsURI="urn:agencytrace:human-ai-trace-model" nsPrefix="humanAITraceModel">
+  <eClassifiers xsi:type="ecore:EClass" name="Actor" eSuperTypes="#//LearningScenario">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" upperBound="-1"
+        eType="#//Action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interactionTask" lowerBound="1"
+        upperBound="-1" eType="#//InteractionTask"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HumanActor" eSuperTypes="#//Actor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AIAgent" eSuperTypes="#//Actor">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="role" eType="#//AgentRole"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Teacher" eSuperTypes="#//HumanActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Learner" eSuperTypes="#//HumanActor"/>
+  <eClassifiers xsi:type="ecore:EClass" name="EvidenceNarration" eSuperTypes="#//LearningScenario">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifies" upperBound="-1"
+        eType="#//AIUsagePattern" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AIUsagePattern">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trigger" upperBound="-1"
+        eType="#//Trigger" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="state" lowerBound="1" eType="#//RelianceState"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="supports" lowerBound="1"
+        upperBound="-1" eType="#//LearningIndicator"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LearningIndicator">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="agency" eType="#//Agency"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="informs" eType="#//LearningSignal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//IndicatorType"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LearningSignal">
+    <eOperations name="detectAgencyShift"/>
+    <eOperations name="detectRelianceShift"/>
+    <eOperations name="detectResponsibilityTransfer"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Agency" eSuperTypes="#//LearningScenario">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="regulation" eType="#//RegulatoryConfiguration"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="HumanAITraceModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actor" lowerBound="1" upperBound="-1"
+        eType="#//Actor" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="learningScenario" upperBound="-1"
+        eType="#//LearningScenario" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="learningSignal" upperBound="-1"
+        eType="#//LearningSignal" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interactionAnalysis" upperBound="-1"
+        eType="#//InteractionAnalysis" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VisualAnalytics">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addresses" eType="#//VisualizationGoal"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="visualizes" eType="#//LearningIndicator"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="visualize" eType="#//LearningSignal"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interactionSequence" lowerBound="1"
+        upperBound="-1" eType="#//InteractionSequence"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Trigger">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stimulus" upperBound="-1"
+        eType="#//Stimulus" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" upperBound="-1"
+        eType="#//Action" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReceiveEvent" eSuperTypes="#//Stimulus"/>
+  <eClassifiers xsi:type="ecore:EClass" name="LearningScenario">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="learningGoal" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LearningActivity" eSuperTypes="#//LearningScenario">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interactionTask" upperBound="-1"
+        eType="#//InteractionTask" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RegulatoryConfiguration">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="learningSignal" upperBound="-1"
+        eType="#//LearningSignal" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="learningIndicator" upperBound="-1"
+        eType="#//LearningIndicator" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mode" eType="#//RegulationMode"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="allocation" eType="#//ControlAllocation"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="RelianceState">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="stateUpdate" lowerBound="1"
+        eType="#//StateUpdate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="level" eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//Int"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Stimulus"/>
+  <eClassifiers xsi:type="ecore:EClass" name="PatternOccurrence" eSuperTypes="#//Stimulus"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BeginState" eSuperTypes="#//Stimulus"/>
+  <eClassifiers xsi:type="ecore:EClass" name="EndState" eSuperTypes="#//Stimulus"/>
+  <eClassifiers xsi:type="ecore:EClass" name="StateUpdate" eSuperTypes="#//Action">
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="SettingAction" eSuperTypes="#//Action">
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EffectAction" eSuperTypes="#//Action">
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InteractionTask">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="action" lowerBound="1"
+        upperBound="-1" eType="#//Action"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="generates" lowerBound="1"
+        upperBound="-1" eType="#//InteractionSequence" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InteractionAnalysis">
+    <eOperations name="analyzePatterns"/>
+    <eOperations name="analyzeTrajectories"/>
+    <eOperations name="generateSignals"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="evidenceNarration" lowerBound="1"
+        upperBound="-1" eType="#//EvidenceNarration"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="learningSignal" upperBound="-1"
+        eType="#//LearningSignal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="method" eType="#//AnalysisMethod"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VisualizationGoal"/>
+  <eClassifiers xsi:type="ecore:EClass" name="InteractionSequence">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="startTime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="endTime" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="IndicatorType">
+    <eLiterals name="Learning Behavior Indicator"/>
+    <eLiterals name="Content Progress Indicator" value="2"/>
+    <eLiterals name="Persistence And Effort Organization Indicator" value="3"/>
+    <eLiterals name="Self-Declared Indicator" value="4"/>
+    <eLiterals name="..." value="5"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ControlAllocation">
+    <eLiterals name="Learner Control"/>
+    <eLiterals name="Shared Control" value="1"/>
+    <eLiterals name="AI Control" value="2"/>
+    <eLiterals name="Teacher Control" value="3"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AgentRole">
+    <eLiterals name="Coach"/>
+    <eLiterals name="Tutor" value="1"/>
+    <eLiterals name="Partner" value="2"/>
+    <eLiterals name="Scaffolder" value="3"/>
+    <eLiterals name="..." value="4"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="RegulationMode">
+    <eLiterals name="Self Regulation"/>
+    <eLiterals name="Co Regulation" value="1"/>
+    <eLiterals name="Socially Shared Regulation" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="AnalysisMethod">
+    <eLiterals name="Sequence Mining"/>
+    <eLiterals name="Transition Analysis" value="1"/>
+    <eLiterals name="Trajectory Analysis" value="2"/>
+    <eLiterals name="Comparative Analysis" value="3"/>
+    <eLiterals name="..." value="4"/>
+  </eClassifiers>
+</ecore:EPackage>
+
+
+

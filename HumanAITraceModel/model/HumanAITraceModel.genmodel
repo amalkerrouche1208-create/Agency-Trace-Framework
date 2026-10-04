@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/HumanAITraceModel/src-gen" creationIcons="false" editDirectory="/HumanAITraceModel.edit/src-gen"
+    editorDirectory="/HumanAITraceModel.editor/src-gen" modelPluginID="HumanAITraceModel" modelName="HumanAITraceModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0"
+    copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>HumanAITraceModel.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="HumanAITraceModel" disposableProviderFactory="true" ecorePackage="HumanAITraceModel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="HumanAITraceModel.ecore#//IndicatorType">
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//IndicatorType/Learning%20Behavior%20Indicator"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//IndicatorType/Content%20Progress%20Indicator"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//IndicatorType/Persistence%20And%20Effort%20Organization%20Indicator"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//IndicatorType/Self-Declared%20Indicator"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//IndicatorType/..."/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="HumanAITraceModel.ecore#//ControlAllocation">
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//ControlAllocation/Learner%20Control"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//ControlAllocation/Shared%20Control"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//ControlAllocation/AI%20Control"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//ControlAllocation/Teacher%20Control"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="HumanAITraceModel.ecore#//AgentRole">
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AgentRole/Coach"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AgentRole/Tutor"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AgentRole/Partner"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AgentRole/Scaffolder"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AgentRole/..."/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="HumanAITraceModel.ecore#//RegulationMode">
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//RegulationMode/Self%20Regulation"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//RegulationMode/Co%20Regulation"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//RegulationMode/Socially%20share%20Regulation"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="HumanAITraceModel.ecore#//AnalysisMethod">
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AnalysisMethod/Sequence%20Mining"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AnalysisMethod/Transition%20Analysis"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AnalysisMethod/Trajectory%20Analysis"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AnalysisMethod/Comparative%20Analysis"/>
+      <genEnumLiterals ecoreEnumLiteral="HumanAITraceModel.ecore#//AnalysisMethod/..."/>
+    </genEnums>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Actor">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//Actor/action"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//Actor/interactionTask"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//Actor/name"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//HumanActor"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//AIAgent">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//AIAgent/role"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Teacher"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Learner"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//EvidenceNarration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//EvidenceNarration/identifies"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//AIUsagePattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//AIUsagePattern/trigger"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//AIUsagePattern/state"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//AIUsagePattern/supports"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//LearningIndicator">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningIndicator/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningIndicator/description"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//LearningIndicator/agency"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//LearningIndicator/informs"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningIndicator/type"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//LearningSignal">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningSignal/name"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//LearningSignal/detectAgencyShift"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//LearningSignal/detectRelianceShift"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//LearningSignal/detectResponsibilityTransfer"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Agency">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//Agency/regulation"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//HumanAITraceModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//HumanAITraceModel/actor"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//HumanAITraceModel/learningScenario"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//HumanAITraceModel/learningSignal"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//HumanAITraceModel/interactionAnalysis"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//HumanAITraceModel/name"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//VisualAnalytics">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//VisualAnalytics/addresses"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//VisualAnalytics/visualizes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//VisualAnalytics/visualize"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//VisualAnalytics/interactionSequence"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Trigger">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//Trigger/stimulus"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//Trigger/action"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//ReceiveEvent"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//LearningScenario">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningScenario/learningGoal"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//LearningActivity">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//LearningActivity/interactionTask"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//LearningActivity/name"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//RegulatoryConfiguration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//RegulatoryConfiguration/learningSignal"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//RegulatoryConfiguration/learningIndicator"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//RegulatoryConfiguration/mode"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//RegulatoryConfiguration/allocation"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//RelianceState">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//RelianceState/stateUpdate"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//RelianceState/level"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Action"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//Stimulus"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//PatternOccurrence"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//BeginState"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//EndState"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//StateUpdate">
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//SettingAction">
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//EffectAction">
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//InteractionTask">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//InteractionTask/action"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//InteractionTask/generates"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//InteractionTask/name"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//InteractionAnalysis">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//InteractionAnalysis/evidenceNarration"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference HumanAITraceModel.ecore#//InteractionAnalysis/learningSignal"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//InteractionAnalysis/method"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//InteractionAnalysis/analyzePatterns"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//InteractionAnalysis/analyzeTrajectories"/>
+      <genOperations ecoreOperation="HumanAITraceModel.ecore#//InteractionAnalysis/generateSignals"/>
+    </genClasses>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//VisualizationGoal"/>
+    <genClasses ecoreClass="HumanAITraceModel.ecore#//InteractionSequence">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//InteractionSequence/startTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute HumanAITraceModel.ecore#//InteractionSequence/endTime"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
+
+
+
